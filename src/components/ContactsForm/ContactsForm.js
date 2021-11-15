@@ -1,13 +1,14 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { addContact } from '../../redux/contacts/contacts-actions';
 import s from './ContactsForm.module.css';
 
 function ContactsForm({ onAddContact }) {
   const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
+  const [number, setNumber] = useState('');  
+  const { contacts } = useSelector(state => state);
 
   const nameId = uuidv4();
   const numberId = uuidv4();
@@ -29,7 +30,15 @@ function ContactsForm({ onAddContact }) {
 
   const handleSubmit = e => {
     e.preventDefault();
-    onAddContact({ name, number });
+
+    const searchName = name =>
+      contacts.items.map(contact => contact.name).includes(name);
+    
+    if (searchName(name)) {
+      return alert(`${name} is already in contacts`);
+    } else {
+      onAddContact({ name, number });
+    }
     setName('');
     setNumber('');
   };
@@ -84,4 +93,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 };
 
-export default connect(null, mapDispatchToProps)(ContactsForm)
+  export default connect(null, mapDispatchToProps)(ContactsForm);
